@@ -1,0 +1,9 @@
+# Archivos compilados y ejecutables
+*.o
+*.out
+*.exe
+build/
+
+# Basura del sistema operativo (si usas Mac o Windows)
+.DS_Store
+Thumbs.db

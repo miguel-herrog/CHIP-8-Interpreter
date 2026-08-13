@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
+#include <stdlib.h>
 
 struct Chip8 {
     uint8_t RAM[4096];
@@ -10,6 +12,8 @@ struct Chip8 {
     uint8_t SP; // Stack Pointer
     uint8_t delayTimer;
     uint8_t soundTimer;
+    uint8_t gfx[64 * 32];
+    uint8_t keypad[16];
 };
 
 uint8_t fontset[80] = {
@@ -33,7 +37,8 @@ uint8_t fontset[80] = {
 
 void initialize(struct Chip8* cpu){
     cpu->PC =  0x200;
-
+    memset(cpu->gfx, 0, sizeof(cpu->gfx));
+    memset(cpu->keypad, 0, sizeof(cpu->keypad));
     for (int i = 0; i < 80; i++){
         cpu->RAM[0x50 + i] = fontset[i];
     }
@@ -66,18 +71,38 @@ void emulate_cycle(struct Chip8* cpu){
     uint8_t y = (opcode & 0x00F0) >> 4;
 
     switch(opcode & 0xF000){
-        case 0x0000: 
-            break;      
+        case 0x0000:{
+            if (opcode == 0x00E0){
+                memset(cpu->gfx, 0, sizeof(cpu->gfx));
+            } 
+            else if (opcode == 0x00EE){
+                cpu->SP -= 1;
+                cpu->PC = cpu->stack[cpu->SP];
+            }
+            break;  
+        }    
         case 0x1000: 
             cpu->PC = NNN;
             break;
-        case 0x2000: 
+        case 0x2000:
+            cpu->stack[cpu->SP] = cpu->PC;
+            cpu->SP += 1;
+            cpu->PC = NNN;
             break;
         case 0x3000: 
+            if (cpu->V[x] == NN){
+                cpu->PC += 2;
+            }
             break;
-        case 0x4000: 
+        case 0x4000:
+            if (cpu->V[x] != NN){
+                cpu->PC += 2;
+            }
             break;
         case 0x5000: 
+            if (cpu->V[x] == cpu->V[y]){
+                cpu->PC += 2;
+            }
             break;
         case 0x6000: 
             cpu->V[x] = NN;
@@ -148,19 +173,80 @@ void emulate_cycle(struct Chip8* cpu){
             }
             break;
         case 0x9000: 
+            if (cpu->V[x] != cpu->V[y]){
+                cpu->PC += 2;
+            }
             break;
         case 0xA000:
-            cpu->I = NNN;
+            cpu->I = NNN; 
             break;
         case 0xB000: 
             break;
         case 0xC000: 
+            cpu->V[x] = (rand() % 256) & NN;
             break;
         case 0xD000: 
             break;
         case 0xE000: 
+            switch(NN){
+                case 0x9E:
+                    if (cpu->keypad[cpu->V[x]] == 1){
+                        cpu->PC += 2;
+                    }
+                    break;
+                case 0xA1:
+                    if (cpu->keypad[cpu->V[x]] == 0){
+                        cpu->PC += 2;
+                    }
+                    break;
+            }
             break;
         case 0xF000: 
+            switch(NN){
+                case 0x07:
+                    cpu->V[x] = cpu->delayTimer;
+                    break;
+                case 0x0A:
+                    int i;
+                    for (i = 0; i < 16; i++){
+                        if (cpu->keypad[i] == 1){
+                            cpu->V[x] = i;
+                            break;
+                        }
+                    }
+                    if (i == 16) { cpu->PC -= 2; }
+                    break;
+                case 0x15:
+                    cpu->delayTimer = cpu->V[x];
+                    break;
+                case 0x18:
+                    cpu->soundTimer = cpu->V[x];
+                    break;
+                case 0x1E:
+                    cpu->I += cpu->V[x];
+                    break;
+                case 0x29:
+                    cpu->I = 0x50 + (cpu->V[x] * 5);
+                    break;
+                case 0x33:
+                    cpu->RAM[cpu->I] = cpu->V[x] / 100;
+                    cpu->RAM[cpu->I + 1] = cpu->V[x] % 100 / 10;
+                    cpu->RAM[cpu->I + 2] = cpu->V[x] % 10;
+                    break;
+                case 0x55:
+                    for (int i = 0; i <= x; i++){
+                        cpu->RAM[cpu->I + i] = cpu->V[i];
+                    }
+                    break;
+                case 0x65:
+                    for (int i = 0; i <= x; i++){
+                        cpu->V[i] = cpu->RAM[cpu->I + i];
+                    }
+                    break;
+                default:
+                    printf("Unknown FX opcode: 0x%X\n", opcode);
+                    break;
+            }
             break;
         default:
             printf("Unknown Opcode or not implemented: 0x%X\n", opcode);

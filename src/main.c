@@ -181,11 +181,37 @@ void emulate_cycle(struct Chip8* cpu){
             cpu->I = NNN; 
             break;
         case 0xB000: 
+            cpu->PC = NNN + cpu->V[0];
             break;
         case 0xC000: 
             cpu->V[x] = (rand() % 256) & NN;
             break;
         case 0xD000: 
+            cpu->V[0xF] = 0;
+            int startX = cpu->V[x] % 64;
+            int startY = cpu->V[y] % 32;
+
+            for (int row = 0; row < N; row++){
+                uint8_t spriteByte = cpu->RAM[cpu->I + row];
+
+                for (int col = 0; col < 8; col++){
+
+                    if (spriteByte & (0x80 >> col)){
+                        int pX = startX + col;
+                        int pY = startY + row;
+
+                        if (pX >= 64 || pY >= 32){
+                            continue;
+                        }
+                        int indice = (pY * 64) + pX;
+
+                        if (cpu->gfx[indice] == 1){
+                            cpu->V[0xF] = 1;
+                        }
+                        cpu->gfx[indice] ^= 1;
+                    }
+                }
+            }
             break;
         case 0xE000: 
             switch(NN){

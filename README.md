@@ -44,3 +44,8 @@ The CHIP-8 originally used a 16-key hexadecimal keypad. This emulator maps those
 | 4 5 6 D | Q W E R |
 | 7 8 9 E | A S D F |
 | A 0 B F | Z X C V |
+
+## References
+Some helpful resources I used when writing this
+- [Tobias V. Langhoff Blog](https://tobiasvl.github.io/blog/write-a-chip-8-emulator/)
+- [Cowgod's Chip-8 Technical Reference v1.0](http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#2.1)

@@ -13,6 +13,17 @@ A custom CHIP-8 virtual machine written from scratch in pure C. Built to master 
 * **Modern Controls:** Original 16-key hexpad mapped to a standard QWERTY layout.
 * **Modular Architecture:** Source code separated into headers and implementations, managed by a custom Makefile.
 
+## How to Play
+If you just want to run the emulator and play CHIP-8 games, you do not need to compile the code.
+1. Go to the **[Releases](../../releases)** section of this repository.
+2. Download the latest `.zip` file.
+3. Extract it to a folder.
+4. Run the emulator from your command line, passing the ROM as an argument:
+
+  `./chip8_emulator.exe roms/yourgame.ch8`
+
+![CHIP-8 Gameplay Tetris](assets/tetris.gif)
+
 ## Dependencies
 To compile and run this emulator from the source code, you will need:
 * **GCC / MinGW-w64** (C Compiler)
@@ -23,13 +34,6 @@ Navigate to the project's root directory and run the build system:
 
 `make`
 *(Note: Use mingw32-make if you are running MinGW on Windows)*
-
-## Usage
-After Building, execute the compiled binary from the command line, passing the path to the CHIP-8 ROM as an argument:
-
-`./chip8_emulator.exe roms/yourgame.ch8`
-
-![CHIP-8 Gameplay Tetris](assets/tetris.gif)
 
 ## Controls Mapping
 The CHIP-8 originally used a 16-key hexadecimal keypad. This emulator maps those keys to the left side of a modern keyboard to ensure playability:

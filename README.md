@@ -1,6 +1,6 @@
 # CHIP-8 Emulator in C
 
-![CHIP-8 Gameplay Demo](gameplay_demo.gif)
+![CHIP-8 IBM Logo](assets/IBM.png)
 
 ## Overview
 A custom CHIP-8 virtual machine written from scratch in pure C. Built to master low-level programming, manual memory management, bitwise operations, and hardware architecture. 
@@ -25,9 +25,11 @@ Navigate to the project's root directory and run the build system:
 *(Note: Use mingw32-make if you are running MinGW on Windows)*
 
 ## Usage
-Execute the compiled binary from the command line, passing the path to the CHIP-8 ROM as an argument:
+After Building, execute the compiled binary from the command line, passing the path to the CHIP-8 ROM as an argument:
 
-`./chip8_emulator.exe roms/space_invaders.ch8`
+`./chip8_emulator.exe roms/yourgame.ch8`
+
+![CHIP-8 Gameplay Tetris](assets/tetris.gif)
 
 ## Controls Mapping
 The CHIP-8 originally used a 16-key hexadecimal keypad. This emulator maps those keys to the left side of a modern keyboard to ensure playability:
